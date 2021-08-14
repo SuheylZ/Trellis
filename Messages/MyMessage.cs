@@ -12,10 +12,11 @@ namespace Program
         object Restore(IDictionary<object, object> map);
     }
     
+    [MessagePackObject()]
     [Serializable]
     public class MyMessage
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        [Key(0)] public int Id { get; set; }
+        [Key(1)] public string Name { get; set; }
     }
 }

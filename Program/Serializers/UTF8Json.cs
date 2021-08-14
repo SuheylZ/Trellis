@@ -43,6 +43,5 @@ namespace NATS_Testing.Serializers
             }
         }
 
-        
     }
 }

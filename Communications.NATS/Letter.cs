@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using MessagePack;
 
 namespace Communications.NATS
@@ -21,8 +22,8 @@ namespace Communications.NATS
         }
         
       
-
-        public Letter(DateTime createdOn, string @by, CommunicationTypes type, object message):this(@by, type, message)
+        [JsonConstructor]
+        public Letter(string @by, CommunicationTypes type, object message, DateTime createdOn):this(@by, type, message)
         {
             CreatedOn = createdOn;
             By = @by;

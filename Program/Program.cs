@@ -22,7 +22,7 @@ namespace Program
                     c.MaxReconnect = Options.ReconnectForever;
                     c.PingInterval = 2000;
                 },
-                NATS_Testing.Serializers.MessagePack.Serializer, NATS_Testing.Serializers.MessagePack.Deserializer);
+                NATS_Testing.Serializers.SimpleSerializer.Serializer, NATS_Testing.Serializers.SimpleSerializer.Deserializer);
 
 
             var request = NATS.CreateRequester(subject, TimeSpan.FromMinutes(10), out var dispose);

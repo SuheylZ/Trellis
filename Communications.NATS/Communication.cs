@@ -158,7 +158,7 @@ namespace Program
                     {
                         Action<object> reply = ret =>
                         {
-                            var letterReplied = new Letter(letterReceived.CreatedOn, "", CommunicationTypes.FireAndForget, ret);
+                            var letterReplied = new Letter("", CommunicationTypes.FireAndForget, ret, letterReceived.CreatedOn);
                             var binary = _serialize(letterReplied);
                             args.Message.Respond(binary);
                         };
@@ -256,7 +256,7 @@ namespace Program
                         {
                             Action<object> reply = ret =>
                             {
-                                var binary = _serialize(new Letter(letter.CreatedOn, "", CommunicationTypes.FireAndForget, ret));
+                                var binary = _serialize(new Letter("", CommunicationTypes.FireAndForget, ret,letter.CreatedOn));
                                 msg.Respond(binary);
                             };
                         
