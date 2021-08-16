@@ -1,5 +1,4 @@
 using System;
-using Program;
 
 namespace Communications.NATS
 {

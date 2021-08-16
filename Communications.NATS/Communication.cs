@@ -3,37 +3,70 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Communications.NATS;
+using Common;
 using NATS.Client;
 using Deserializer = Common.Deserializer;
 using Serializer = Common.Serializer;
 
 
-namespace Program
+namespace Communications.NATS
 {
     public class Communication
     {
-        
-        
+        // const string KCreatedOn = "createdOn";
+        // const string KSentFrom = "sentFrom";
+        // const string KCommunicationType = "communicationType";
+        // const string KTypeName = "typeName";
+        // const string KMessageId = "messageId";
+
+
         readonly Action<Options> _configureOptions;
+        readonly Action<Exception> _errorHandler;
         
-        readonly Common.Serializer _serialize;
-        readonly Common.Deserializer  _deserialize;
+        readonly Serializer _serialize;
+        readonly Deserializer  _deserialize;
 
         readonly string _sender;
-
-        public Communication(Action<Options> configureAction, Common.Serializer serialize, Common.Deserializer deserialize) : this(configureAction, serialize, deserialize, string.Empty)
+ 
+        public Communication(Action<Options> configureAction, Common.Serializer serialize, Common.Deserializer deserialize) : this(configureAction, serialize, deserialize, string.Empty, ex => { })
         {
         }
-
-        public Communication(Action<Options> configureOptions, Serializer serialize, Deserializer deserialize, string sender)
+        public Communication(Action<Options> configureOptions, Serializer serialize, Deserializer deserialize, string sender, Action<Exception> errorHandler)
         {
             _configureOptions = configureOptions;
             _serialize = serialize;
             _deserialize = deserialize;
             _sender = sender;
+            _errorHandler = errorHandler;
         }
-
+        
+        Msg CreateMessage<T>(string subject, T data, CommunicationTypes type)
+        {
+            var id = Guid.NewGuid().ToString();
+            var binary = _serialize(data);
+            var md = new Metadata(_sender, type, data);
+            
+            return new Msg
+            {
+                Data = binary,
+                Header = md,
+                Subject = subject,
+                Reply = id
+            };
+            
+            // MsgHeader CreateMessageHeader<T>(CommunicationTypes type, string id)
+            // {
+            //     var header = new MsgHeader();
+            //     header[KMessageId] = id;
+            //     header[KCreatedOn] = DateTime.UtcNow.ToIso8601String();
+            //     header[KSentFrom] = _sender;
+            //     header[KCommunicationType] = type.ToString();
+            //     header[KTypeName] = typeof(T).FullName;
+            //
+            //     return header;
+            // }
+        }
+        
         
         
         /// <summary>
@@ -42,7 +75,7 @@ namespace Program
         /// <param name="subject"></param>
         /// <param name="disposer">a function to cleanup the things later on. uses IDisposable</param>
         /// <returns></returns>
-        public Func<object, Task> CreatePublisher(string subject, out IDisposable disposer)
+        public Func<object, ValueTask> CreatePublisher(string subject, out IDisposable disposer)
         {
             var cf = new ConnectionFactory();
             var options = ConnectionFactory.GetDefaultOptions();
@@ -60,20 +93,87 @@ namespace Program
             {
                 try
                 {
-                    var letter = new Letter(_sender, CommunicationTypes.FireAndForget, data);
-                    var binary = _serialize(letter);
-                    
-                    cnn.Publish(subject, Guid.NewGuid().ToString(), binary);
-                    return Task.CompletedTask;
+                    var message = CreateMessage(subject, data, CommunicationTypes.FireAndForget);
+                    cnn.Publish(message);
+                    return ValueTask.CompletedTask;
                 }
                 catch (Exception e)
                 {
-                    return Task.FromException(e);
+                    return ValueTask.FromException(e);
                 }
             };
         }
-
         
+        
+        /// <summary>
+        /// Creates an async subscription that gets called automatically when a message is received.
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="group"></param>
+        /// <param name="handler"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public Func<CancellationToken, Task> CreateSubscription<T>(string subject, string group, Action<Metadata, object, Action<object>> handler)
+        {
+            var cf = new ConnectionFactory();
+            var options = ConnectionFactory.GetDefaultOptions();
+            _configureOptions(options);
+
+
+            var cnn = cf.CreateConnection(options);
+            var subscription = cnn.SubscribeAsync(subject, group, (_, args) =>
+            {
+                try
+                {
+                    var t1 = _deserialize(typeof(T), args.Message.Data);
+                    
+                    if (t1 is T data)
+                    {
+                        Metadata md = args.Message.Header;
+                        Action<object> reply = obj => args.Message.Respond(_serialize(obj)); 
+
+                        handler(md, data, reply);
+                    }
+                    else 
+                        throw new InvalidCastException($"expected {typeof(T).FullName} but received {t1.GetType().FullName}");
+                    
+                }
+                catch (Exception e)
+                {
+                    _errorHandler(e);
+                }
+            });
+
+            
+            
+            
+            var alreadyStarted = false;
+            return (token) =>
+            {
+                if (alreadyStarted)
+                    throw new Exception("Cannot start listening again!");
+
+                subscription.Start();
+                alreadyStarted = true;
+                
+                var tcs = new TaskCompletionSource();
+                token.Register(() =>
+                {
+                    subscription.DrainAsync();
+                    subscription.Unsubscribe();
+                    subscription.Dispose();
+
+                    tcs.SetResult();
+                    alreadyStarted = false;
+                });
+
+                return tcs.Task;
+            };
+        }
+
+
+
+
         /// <summary>
         /// Creates a Requester a Request function that takes a message and returns a reply
         /// </summary>
@@ -81,7 +181,7 @@ namespace Program
         /// <param name="timeoutDuration">duration after which the timeout exception occurs</param>
         /// <param name="disposer"></param>
         /// <returns>the message that should be returned</returns>
-        public Func<object, CancellationToken, Task<Letter>> CreateRequester(string subject, TimeSpan timeoutDuration, out Disposable disposer)
+        public Func<object, CancellationToken, Task<TReply>> CreateRequester<TReply>(string subject, TimeSpan timeoutDuration, out Disposable disposer)
         {
             var cf = new ConnectionFactory();
             var options = ConnectionFactory.GetDefaultOptions();
@@ -104,110 +204,29 @@ namespace Program
             {
                 try
                 {
-                    var letter = new Letter(_sender, CommunicationTypes.Query, data);
-                    var binary = _serialize(letter);
+                    var msg = CreateMessage(subject, data, CommunicationTypes.Query);
+                    var t = await cnn.RequestAsync(msg, milliseconds, token).ConfigureAwait(false);
+                    var ans = _deserialize(typeof(TReply), t.Data);
 
-                    //var msg = CreateMessage(subject, binary, CommunicationTypes.Query);
-                    var t = await cnn.RequestAsync(subject, binary, milliseconds, token).ConfigureAwait(false);
-                    var ans = _deserialize(typeof(Letter), t.Data);
-
-                    if (ans is Letter l1)
+                    if (ans is TReply l1)
                         return l1;
 
                     throw new Exception("Not a letter");
-
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             };
         }
 
-        // Msg CreateMessage(string subject, byte[] binary, CommunicationTypes type)
-        // {
-        //     var header = new MsgHeader();
-        //     
-        //     header["sentAt"] = DateTime.UtcNow.ToIsoString();
-        //     header["sender"] = _sender;
-        //     header["messagetype"] = type.ToString();
-        //
-        //     return new Msg
-        //     {
-        //         Data = binary,
-        //         Header = header,
-        //         Subject = subject,
-        //         Reply = Guid.NewGuid().ToString()
-        //     };
-        // }
+        
 
-        public Func<CancellationToken, Task> CreateListener(string subject, string group, Action<object, Action<object>> handler)
+        public Func<CancellationToken, IEnumerable<(Metadata header, TMessage message, Action<object> reply)>> CreateResponder<TMessage>(string subject, string group)
         {
             var cf = new ConnectionFactory();
             var options = ConnectionFactory.GetDefaultOptions();
             _configureOptions(options);
-
-
-            var cnn = cf.CreateConnection(options);
-            var subscription = cnn.SubscribeAsync(subject, group, (_, args) =>
-            {
-                try
-                {
-                    var t1 = _deserialize(typeof(Letter), args.Message.Data);
-                    if (t1 is Letter letterReceived)
-                    {
-                        Action<object> reply = ret =>
-                        {
-                            var letterReplied = new Letter("", CommunicationTypes.FireAndForget, ret, letterReceived.CreatedOn);
-                            var binary = _serialize(letterReplied);
-                            args.Message.Respond(binary);
-                        };
-                     
-                        handler(letterReceived.Message, reply);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.Error.WriteLine(e);
-                }
-            });
-
-            var alreadyStarted = false;
-
-            return (token) =>
-            {
-                if (alreadyStarted)
-                    throw new Exception("Cannot start listening again!");
-                
-               
-                
-                subscription.Start();
-                alreadyStarted = true;
-                
-                var tcs = new TaskCompletionSource();
-                token.Register(() =>
-                {
-                    subscription.DrainAsync();
-                    subscription.Unsubscribe();
-                    subscription.Dispose();
-
-                    tcs.SetResult();
-                    alreadyStarted = false;
-                });
-
-                return tcs.Task;
-            };
-        }
-        
-        
-        
-        
-        public Func<CancellationToken, IEnumerable<(object message, Action<object> reply)>> CreateIterator(string subject, string group)
-        {
-            var cf = new ConnectionFactory();
-            var options = ConnectionFactory.GetDefaultOptions();
-            _configureOptions(options);
-
 
             var cnn = cf.CreateConnection(options);
             var sw = new Stopwatch();
@@ -216,57 +235,52 @@ namespace Program
 
             return Fetcher;
 
-            bool TryGetMessage(out Msg message, CancellationToken token)
-            {
 
-                try
-                {
-                    if (token.IsCancellationRequested)
-                        throw new TaskCanceledException();
-
-                    message = subscription.NextMessage(500);
-                    return true;
-                }
-                catch (NATSTimeoutException ex)
-                {
-                    message = null;
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    message = new Msg
-                    {
-                        Data = _serialize(new Letter(subject, CommunicationTypes.FireAndForget, ex)), 
-                        Reply = string.Empty, 
-                        Subject =  subscription.Subject
-                    };
-                    return false;
-                }
-            }
             
-            IEnumerable<(object message, Action<object> reply)> Fetcher(CancellationToken token)
+            IEnumerable<(Metadata md, TMessage message, Action<object> reply)> Fetcher(CancellationToken token)
             {
                 while (!token.IsCancellationRequested && subscription.IsValid)
                 {
                     if (TryGetMessage(out var msg, token))
                     {
-                        var message = _deserialize(typeof(Letter), msg.Data);
-
-                        if (message is Letter letter)
-                        {
-                            Action<object> reply = ret =>
-                            {
-                                var binary = _serialize(new Letter("", CommunicationTypes.FireAndForget, ret,letter.CreatedOn));
-                                msg.Respond(binary);
-                            };
-                        
-                            yield return (letter.Message, reply);
-                        }
+                        Metadata md = msg.Header;
+                        var message = _deserialize(typeof(TMessage), msg.Data);
+                        if (message is TMessage data)
+                            yield return (md, data, ret =>msg.Respond(_serialize(ret)));
                     }
                 }
                 
                 subscription.Unsubscribe();
                 subscription.Dispose();
+                
+                bool TryGetMessage(out Msg message, CancellationToken token1)
+                {
+                    try
+                    {
+                        message = null;
+                        
+                        if (token1.IsCancellationRequested)
+                            return false;
+
+                        message = subscription.NextMessage(500);
+                        return true;
+                    }
+                    catch (NATSTimeoutException ex)
+                    {
+                        message = null;
+                        return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        message = new Msg
+                        {
+                            Data = _serialize(ex), 
+                            Reply = string.Empty, 
+                            Subject =  subscription.Subject
+                        };
+                        return false;
+                    }
+                }
             }
         }
     }

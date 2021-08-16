@@ -1,12 +1,9 @@
-using System;
 using System.IO;
 using Common;
-using Communications.NATS;
-using Utf8Json;
 
 namespace NATS_Testing.Serializers
 {
-    public class UTF8Json
+    public class Protobuff
     {
         public static Serializer Serializer
         {
@@ -14,8 +11,12 @@ namespace NATS_Testing.Serializers
             {
                 return (data) =>
                 {
-                    var str = JsonSerializer.Serialize(data);
-                    return str;
+                    using (var ms = new MemoryStream())
+                    {
+                        ProtoBuf.Serializer.Serialize(ms, data);
+                        ms.Close();
+                        return ms.ToArray();
+                    }
                 };
             }
         }
@@ -28,16 +29,10 @@ namespace NATS_Testing.Serializers
                 {
                     using (var ms = new MemoryStream(data))
                     {
-                        var ret1 = JsonSerializer.Deserialize<object>(ms);
+                        var obj = ProtoBuf.Serializer.Deserialize(type, ms);
                         ms.Close();
-                        if (ret1.GetType() == type)
-                        {
-                            return ret1;
-                        }
-
-                        return null;
-
-
+                        
+                        return obj;
                     }
                 };
             }

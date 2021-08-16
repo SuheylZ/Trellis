@@ -1,8 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using MessagePack;
+using ProtoBuf;
 
 namespace Program
 {
@@ -12,11 +9,19 @@ namespace Program
         object Restore(IDictionary<object, object> map);
     }
     
-    [MessagePackObject()]
-    [Serializable]
+    
+    //[Serializable]
+    [ProtoContract(Name = "MyMessage", SkipConstructor = false)]
     public class MyMessage
     {
-        [Key(0)] public int Id { get; set; }
-        [Key(1)] public string Name { get; set; }
+        [ProtoMember(1, Name="Id")] 
+        public int Id { get; set; }
+        [ProtoMember(2, Name = "Name")] 
+        public string Name { get; set; }
     }
+
+
+    public record YourMessage(int Age, string Name);
+    
+    
 }
