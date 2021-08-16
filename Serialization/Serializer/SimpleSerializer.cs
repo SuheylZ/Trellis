@@ -1,15 +1,12 @@
 using System;
-using System.IO;
 using System.Text;
 using Common;
-using Communications.NATS;
-using Utf8Json;
 
-namespace NATS_Testing.Serializers
+namespace Serializer
 {
     public class SimpleSerializer
     {
-        public static Serializer Serializer
+        public static Common.Serializer Serializer
         {
             get
             {

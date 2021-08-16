@@ -1,21 +1,24 @@
-using System;
 using System.IO;
+using System.Text;
 using Common;
-using Communications.NATS;
-using Utf8Json;
+using MessagePack;
 
 namespace NATS_Testing.Serializers
 {
-    public class UTF8Json
+    public class MessagePack
     {
-        public static Serializer Serializer
+        public static Common.Serializer Serializer
         {
             get
             {
                 return (data) =>
                 {
-                    var str = JsonSerializer.Serialize(data);
-                    return str;
+                    using (var ms = new MemoryStream())
+                    {
+                        MessagePackSerializer.Serialize(data.GetType(), ms, data);
+                        ms.Close();
+                        return ms.GetBuffer();
+                    }
                 };
             }
         }
@@ -28,20 +31,14 @@ namespace NATS_Testing.Serializers
                 {
                     using (var ms = new MemoryStream(data))
                     {
-                        var ret1 = JsonSerializer.Deserialize<object>(ms);
+                        var ret1 = MessagePackSerializer.Deserialize(type, ms);
                         ms.Close();
-                        if (ret1.GetType() == type)
-                        {
-                            return ret1;
-                        }
-
-                        return null;
-
-
+                        return ret1;
                     }
                 };
             }
         }
 
+        
     }
 }

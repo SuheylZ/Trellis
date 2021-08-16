@@ -18,6 +18,7 @@
       <ProjectReference Include="..\Common\Common.csproj" />
       <ProjectReference Include="..\Communications.NATS\Communications.NATS.csproj" />
       <ProjectReference Include="..\Messages\Messages.csproj" />
+      <ProjectReference Include="..\Serialization\Serializer\Serializer.csproj" />
     </ItemGroup>
 
 </Project>

@@ -22,7 +22,7 @@ namespace Common
         {
             return DateTime.TryParseExact(
                 isoString,   //"2010-08-20T15:00:00Z"
-                @"yyyy-MM-dd\THH:mm:ss\Z",
+                @"yyyy-MM-dd\THH:mm:ss.fff\Z",
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.AdjustToUniversal, 
                 out date);

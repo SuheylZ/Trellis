@@ -27,7 +27,8 @@ namespace Communications.NATS
         readonly Deserializer  _deserialize;
 
         readonly string _sender;
- 
+        readonly Func<Lazy<IConnection>> _establishConnection;
+
         public Communication(Action<Options> configureAction, Common.Serializer serialize, Common.Deserializer deserialize) : this(configureAction, serialize, deserialize, string.Empty, ex => { })
         {
         }
@@ -38,6 +39,16 @@ namespace Communications.NATS
             _deserialize = deserialize;
             _sender = sender;
             _errorHandler = errorHandler;
+            
+            _establishConnection = ()=>
+                new Lazy<IConnection>(()=>
+                {
+                    var cf = new ConnectionFactory();
+                    var options = ConnectionFactory.GetDefaultOptions();
+                    _configureOptions(options);
+                    return cf.CreateConnection(options);
+                }
+            );
         }
         
         Msg CreateMessage<T>(string subject, T data, CommunicationTypes type)
@@ -77,16 +88,15 @@ namespace Communications.NATS
         /// <returns></returns>
         public Func<object, ValueTask> CreatePublisher(string subject, out IDisposable disposer)
         {
-            var cf = new ConnectionFactory();
-            var options = ConnectionFactory.GetDefaultOptions();
-            _configureOptions(options);
-
-            var cnn = cf.CreateConnection(options);
+            var cnn = _establishConnection();
 
             disposer = new Disposable(() =>
             {
-                cnn.Close();
-                cnn.Dispose();
+                if (cnn.IsValueCreated)
+                {
+                    cnn.Value.Close();
+                    cnn.Value.Dispose();
+                }
             });
 
             return (data) =>
@@ -94,7 +104,7 @@ namespace Communications.NATS
                 try
                 {
                     var message = CreateMessage(subject, data, CommunicationTypes.FireAndForget);
-                    cnn.Publish(message);
+                    cnn.Value.Publish(message);
                     return ValueTask.CompletedTask;
                 }
                 catch (Exception e)
@@ -113,39 +123,9 @@ namespace Communications.NATS
         /// <param name="handler"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public Func<CancellationToken, Task> CreateSubscription<T>(string subject, string group, Action<Metadata, object, Action<object>> handler)
+        public Func<CancellationToken, Task> CreateAutoListener<T>(string subject, string group, Action<Metadata, object, Action<object>> handler)
         {
-            var cf = new ConnectionFactory();
-            var options = ConnectionFactory.GetDefaultOptions();
-            _configureOptions(options);
-
-
-            var cnn = cf.CreateConnection(options);
-            var subscription = cnn.SubscribeAsync(subject, group, (_, args) =>
-            {
-                try
-                {
-                    var t1 = _deserialize(typeof(T), args.Message.Data);
-                    
-                    if (t1 is T data)
-                    {
-                        Metadata md = args.Message.Header;
-                        Action<object> reply = obj => args.Message.Respond(_serialize(obj)); 
-
-                        handler(md, data, reply);
-                    }
-                    else 
-                        throw new InvalidCastException($"expected {typeof(T).FullName} but received {t1.GetType().FullName}");
-                    
-                }
-                catch (Exception e)
-                {
-                    _errorHandler(e);
-                }
-            });
-
-            
-            
+            var cnn =_establishConnection();
             
             var alreadyStarted = false;
             return (token) =>
@@ -153,6 +133,29 @@ namespace Communications.NATS
                 if (alreadyStarted)
                     throw new Exception("Cannot start listening again!");
 
+                var subscription = cnn.Value.SubscribeAsync(subject, group, (_, args) =>
+                {
+                    try
+                    {
+                        var t1 = _deserialize(typeof(T), args.Message.Data);
+                    
+                        if (t1 is T data)
+                        {
+                            Metadata md = args.Message.Header;
+                            Action<object> reply = obj => args.Message.Respond(_serialize(obj)); 
+
+                            handler(md, data, reply);
+                        }
+                        else 
+                            throw new InvalidCastException($"expected {typeof(T).FullName} but received {t1.GetType().FullName}");
+                    
+                    }
+                    catch (Exception e)
+                    {
+                        _errorHandler(e);
+                    }
+                });
+                
                 subscription.Start();
                 alreadyStarted = true;
                 
@@ -183,55 +186,39 @@ namespace Communications.NATS
         /// <returns>the message that should be returned</returns>
         public Func<object, CancellationToken, Task<TReply>> CreateRequester<TReply>(string subject, TimeSpan timeoutDuration, out Disposable disposer)
         {
-            var cf = new ConnectionFactory();
-            var options = ConnectionFactory.GetDefaultOptions();
-
-            _configureOptions(options);
-
-            var cnn = cf.CreateConnection(options);
+            var cnn =_establishConnection();
             
             if (!int.TryParse($"{timeoutDuration.TotalMilliseconds}", out var milliseconds))
                 milliseconds = int.MaxValue;
             
             disposer = new Disposable(() =>
             {
-                cnn.Close();
-                cnn.Dispose();
+                if (cnn.IsValueCreated)
+                {
+                    cnn.Value.Close();
+                    cnn.Value.Dispose();
+                }
             });
 
             
             return async (data, token) =>
             {
-                try
-                {
-                    var msg = CreateMessage(subject, data, CommunicationTypes.Query);
-                    var t = await cnn.RequestAsync(msg, milliseconds, token).ConfigureAwait(false);
-                    var ans = _deserialize(typeof(TReply), t.Data);
+                var msg = CreateMessage(subject, data, CommunicationTypes.Query);
+                var t = await cnn.Value.RequestAsync(msg, milliseconds, token).ConfigureAwait(false);
+                var ans = _deserialize(typeof(TReply), t.Data);
 
-                    if (ans is TReply l1)
-                        return l1;
-
-                    throw new Exception("Not a letter");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                if (ans is TReply l1)
+                    return l1;
+                else
+                    throw new InvalidCastException($"Not of type {typeof(TReply).FullName}");
             };
         }
 
         
 
-        public Func<CancellationToken, IEnumerable<(Metadata header, TMessage message, Action<object> reply)>> CreateResponder<TMessage>(string subject, string group)
+        public Func<CancellationToken, IEnumerable<(Metadata header, TMessage message, Action<object> reply)>> CreateListeningIterator<TMessage>(string subject, string group)
         {
-            var cf = new ConnectionFactory();
-            var options = ConnectionFactory.GetDefaultOptions();
-            _configureOptions(options);
-
-            var cnn = cf.CreateConnection(options);
-            var sw = new Stopwatch();
-
-            var subscription = cnn.SubscribeSync(subject, group);
+            var cnn = _establishConnection();
 
             return Fetcher;
 
@@ -239,6 +226,8 @@ namespace Communications.NATS
             
             IEnumerable<(Metadata md, TMessage message, Action<object> reply)> Fetcher(CancellationToken token)
             {
+                var subscription = cnn.Value.SubscribeSync(subject, group);
+                
                 while (!token.IsCancellationRequested && subscription.IsValid)
                 {
                     if (TryGetMessage(out var msg, token))
@@ -265,7 +254,7 @@ namespace Communications.NATS
                         message = subscription.NextMessage(500);
                         return true;
                     }
-                    catch (NATSTimeoutException ex)
+                    catch (NATSTimeoutException _)
                     {
                         message = null;
                         return false;

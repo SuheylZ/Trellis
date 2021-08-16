@@ -1,13 +1,11 @@
 using System.IO;
-using System.Text;
 using Common;
-using MessagePack;
 
-namespace NATS_Testing.Serializers
+namespace Serializer
 {
-    public class MessagePack
+    public class Protobuff
     {
-        public static Serializer Serializer
+        public static Common.Serializer Serializer
         {
             get
             {
@@ -15,9 +13,9 @@ namespace NATS_Testing.Serializers
                 {
                     using (var ms = new MemoryStream())
                     {
-                        MessagePackSerializer.Serialize(data.GetType(), ms, data);
+                        ProtoBuf.Serializer.Serialize(ms, data);
                         ms.Close();
-                        return ms.GetBuffer();
+                        return ms.ToArray();
                     }
                 };
             }
@@ -31,14 +29,14 @@ namespace NATS_Testing.Serializers
                 {
                     using (var ms = new MemoryStream(data))
                     {
-                        var ret1 = MessagePackSerializer.Deserialize(type, ms);
+                        var obj = ProtoBuf.Serializer.Deserialize(type, ms);
                         ms.Close();
-                        return ret1;
+                        
+                        return obj;
                     }
                 };
             }
         }
 
-        
     }
 }
