@@ -254,7 +254,7 @@ namespace Communications.NATS
                         message = subscription.NextMessage(500);
                         return true;
                     }
-                    catch (NATSTimeoutException _)
+                    catch (NATSTimeoutException ex)
                     {
                         message = null;
                         return false;
