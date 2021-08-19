@@ -12,7 +12,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\SCM.Framework.Communications.Common\SCM.Framework.Communications.Common.csproj" />
+      <ProjectReference Include="..\..\Communication\Common\SCM.Framework.Communications.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>

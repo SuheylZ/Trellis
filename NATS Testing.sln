@@ -4,11 +4,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Program", "Program\Program.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messages", "Messages\Messages.csproj", "{25C57234-94B9-4AC2-9AA6-9265F55099BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCM.Framework.Communications.NATS", "SCM.Framework.Communications.NATS\SCM.Framework.Communications.NATS.csproj", "{4B61B97B-4A1F-4F9B-BD3B-EA7BDB8DA201}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCM.Framework.Communications.Common", "SCM.Framework.Communications.Common\SCM.Framework.Communications.Common.csproj", "{4A070870-9D4F-4472-9FAF-124EE2B6F98D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCM.Framework.Serialization", "Serialization\SCM.Framework.Serialization\SCM.Framework.Serialization.csproj", "{4F97C50E-99ED-41A1-AB08-A7FE807980F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCM.Framework.Communications.Common", "Communication\Common\SCM.Framework.Communications.Common.csproj", "{BE178445-6E57-41ED-96A6-6D99B74A1161}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCM.Framework.Communications.NATS", "Communication\NATS\SCM.Framework.Communications.NATS.csproj", "{A5879BE1-2ECF-4B53-A1CA-D7DA024D6772}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,18 +24,18 @@ Global
 		{25C57234-94B9-4AC2-9AA6-9265F55099BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25C57234-94B9-4AC2-9AA6-9265F55099BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25C57234-94B9-4AC2-9AA6-9265F55099BC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4B61B97B-4A1F-4F9B-BD3B-EA7BDB8DA201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B61B97B-4A1F-4F9B-BD3B-EA7BDB8DA201}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B61B97B-4A1F-4F9B-BD3B-EA7BDB8DA201}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B61B97B-4A1F-4F9B-BD3B-EA7BDB8DA201}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A070870-9D4F-4472-9FAF-124EE2B6F98D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A070870-9D4F-4472-9FAF-124EE2B6F98D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A070870-9D4F-4472-9FAF-124EE2B6F98D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A070870-9D4F-4472-9FAF-124EE2B6F98D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4F97C50E-99ED-41A1-AB08-A7FE807980F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4F97C50E-99ED-41A1-AB08-A7FE807980F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F97C50E-99ED-41A1-AB08-A7FE807980F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F97C50E-99ED-41A1-AB08-A7FE807980F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE178445-6E57-41ED-96A6-6D99B74A1161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE178445-6E57-41ED-96A6-6D99B74A1161}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE178445-6E57-41ED-96A6-6D99B74A1161}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE178445-6E57-41ED-96A6-6D99B74A1161}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5879BE1-2ECF-4B53-A1CA-D7DA024D6772}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5879BE1-2ECF-4B53-A1CA-D7DA024D6772}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5879BE1-2ECF-4B53-A1CA-D7DA024D6772}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5879BE1-2ECF-4B53-A1CA-D7DA024D6772}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

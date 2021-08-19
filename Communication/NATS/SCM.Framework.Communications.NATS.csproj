@@ -12,14 +12,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SCM.Framework.Communications.Common\SCM.Framework.Communications.Common.csproj">
-          <PrivateAssets>all</PrivateAssets>
-      </ProjectReference>
+      <PackageReference Include="NATS.Client" Version="0.14.0-pre1" />
+      <PackageReference Include="NLog" Version="4.7.10" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="NATS.Client" Version="0.14.0-pre1" />
-      <PackageReference Include="NLog" Version="4.7.10" />
+      <ProjectReference Include="..\Common\SCM.Framework.Communications.Common.csproj" />
     </ItemGroup>
 
 </Project>

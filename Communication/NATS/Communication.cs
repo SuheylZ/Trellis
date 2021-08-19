@@ -9,7 +9,7 @@ using Serializer = SCM.Framework.Communications.Common.Serializer;
 
 namespace SCM.Framework.Communications.NATS
 {
-    public class Communication
+    public class Communication : ICommunication, ICommunicationStatus
     {
         readonly Action<Options> _configureOptions;
         readonly Action<Exception> _errorHandler;
@@ -251,11 +251,12 @@ namespace SCM.Framework.Communications.NATS
         /// <param name="group">group name</param>
         /// <typeparam name="TMessage">type of the message that will be received on this queue</typeparam>
         /// <returns></returns>
-        public Func<CancellationToken, IEnumerable<(Metadata header, TMessage message, Action<object> reply)>> CreateListeningIterator<TMessage>(string subject, string group)
+        public Func<CancellationToken, IEnumerable<(Metadata header, byte[] message, Action<object> reply)>> CreateListeningIterator(string subject, string group, out Deserializer deserializer)
         {
+            deserializer = _deserialize;
             return Fetcher;
 
-            IEnumerable<(Metadata md, TMessage message, Action<object> reply)> Fetcher(CancellationToken token)
+            IEnumerable<(Metadata md, byte[] message, Action<object> reply)> Fetcher(CancellationToken token)
             {
                 var cnn = _establishConnection().Value;
                 using (cnn)
@@ -267,9 +268,8 @@ namespace SCM.Framework.Communications.NATS
                             if (TryGetMessage(subscription, out var msg, token))
                             {
                                 Metadata md = msg.Header;
-                                var message = _deserialize(typeof(TMessage), msg.Data);
-                                if (message is TMessage data)
-                                    yield return (md, data, ret => msg.Respond(_serialize(ret)));
+                                var data = msg.Data;
+                                yield return (md, data, ret => msg.Respond(_serialize(ret)));
                             }
                         }
                         subscription.Unsubscribe();
