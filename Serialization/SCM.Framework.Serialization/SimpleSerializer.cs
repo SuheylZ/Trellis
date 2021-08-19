@@ -1,12 +1,12 @@
 using System;
 using System.Text;
-using Common;
+using SCM.Framework.Communications.Common;
 
-namespace SCM.Framework.Serializer
+namespace SCM.Framework.Serialization
 {
     public class SimpleSerializer
     {
-        public static Common.Serializer Serializer
+        public static Communications.Common.Serializer Serializer
         {
             get
             {

@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Common
+namespace SCM.Framework.Communications.Common
 {
     public delegate byte[] Serializer(object message);
     public delegate object Deserializer(Type type, byte[] data);

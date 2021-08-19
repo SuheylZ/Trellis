@@ -1,7 +1,6 @@
 using System;
-using Communications.NATS;
 
-namespace Common
+namespace SCM.Framework.Communications.Common
 {
     public sealed class Letter
     {

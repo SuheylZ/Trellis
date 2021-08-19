@@ -1,6 +1,6 @@
 using System;
 
-namespace Communications.NATS
+namespace SCM.Framework.Communications.Common
 {
     public sealed class Disposable : IDisposable
     {

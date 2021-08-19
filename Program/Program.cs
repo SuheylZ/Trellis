@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Communications.NATS;
-using NATS_Testing.Serializers;
+using SCM.Framework.Communications.NATS;
 using NATS.Client;
-using Serializer;
+using SCM.Framework.Communications.Common;
+using SCM.Framework.Serialization;
 
 
 namespace Program
@@ -16,7 +16,8 @@ namespace Program
         {
             var servers = new[] {"127.0.0.1:4222"};
             var subject = "foo.baz";
-            
+
+            var serdes = new SerDes((obj) => NewtonSoft.Serialize(obj.GetType(), obj), (typ, x) => NewtonSoft.Deserialize(typ, x));
             
             var NATS = new Communication(c =>
                 {
@@ -24,8 +25,7 @@ namespace Program
                     c.AllowReconnect = true;
                     c.MaxReconnect = Options.ReconnectForever;
                     c.PingInterval = 2000;
-                },
-                (obj)=> NewtonSoft.Serialize(obj.GetType(), obj), (typ, x)=> NewtonSoft.Deserialize(typ, x));
+                }, serdes);
             
             
             
@@ -35,20 +35,21 @@ namespace Program
            
             Action<string> listening = (name) =>
             {
-                var listen = NATS.CreateListeningIterator<MyMessage>(subject, "mygroup");
+                var listen = NATS.CreateGenericListeningIterator(subject, "mygroup");
             
                 try
                 {
-                    foreach (var (_, msg, reply) in listen(cts.Token))
+                    foreach (var (headers, msg, reply) in listen(cts.Token))
                     {
-                        switch (msg)
+                        switch (msg.Subject)
                         {
-                            case MyMessage _:
+                            case "foo.baz":
                                 if (DateTime.Now.Ticks % 2 == 0)
                                     reply((object) 234);
                                 else
                                     reply(new {H = "helo"});
                                 break;
+                            
                             default:
                                 reply($"{name}: You sent X");
                                 break;
@@ -105,10 +106,10 @@ namespace Program
             // var o1 = new YourMessage(1, "ali");
             // var o2 = new MyMessage {Id = 1, Name = "ali"};
             //
-            // var b1 = Protobuff.Serializer(o2);
+            // var b1 = Protobuff.SCM.Framework.Serialization(o2);
             // var ox = Protobuff.Deserializer(o2.GetType(), b1);
             //
-            // var b2 = Protobuff.Serializer(o1);
+            // var b2 = Protobuff.SCM.Framework.Serialization(o1);
             // var oy = Protobuff.Deserializer(o2.GetType(), b2);
         }
     }

@@ -1,4 +1,4 @@
-namespace Common
+namespace SCM.Framework.Communications.Common
 {
     public static class HeaderNames
     {

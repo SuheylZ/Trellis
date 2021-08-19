@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>SCM.Framework.Communications.Common</PackageId>
+        <Authors>Suheyl Z.</Authors>
+        <Description>All the common functionality that is often required and used.</Description>
+        <PackageVersion>1.0.1</PackageVersion>
+        <Company>NICCAF</Company>
+    </PropertyGroup>
+
+</Project>

@@ -4,13 +4,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Program", "Program\Program.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messages", "Messages\Messages.csproj", "{25C57234-94B9-4AC2-9AA6-9265F55099BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Communications.NATS", "Communications.NATS\Communications.NATS.csproj", "{4B61B97B-4A1F-4F9B-BD3B-EA7BDB8DA201}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCM.Framework.Communications.NATS", "SCM.Framework.Communications.NATS\SCM.Framework.Communications.NATS.csproj", "{4B61B97B-4A1F-4F9B-BD3B-EA7BDB8DA201}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{4A070870-9D4F-4472-9FAF-124EE2B6F98D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCM.Framework.Communications.Common", "SCM.Framework.Communications.Common\SCM.Framework.Communications.Common.csproj", "{4A070870-9D4F-4472-9FAF-124EE2B6F98D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serialization", "Serialization", "{F4940B6F-E231-4E5F-B9C8-3C16C7FCFF6B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serializer", "Serialization\Serializer\Serializer.csproj", "{4F97C50E-99ED-41A1-AB08-A7FE807980F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCM.Framework.Serialization", "Serialization\SCM.Framework.Serialization\SCM.Framework.Serialization.csproj", "{4F97C50E-99ED-41A1-AB08-A7FE807980F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +38,5 @@ Global
 		{4F97C50E-99ED-41A1-AB08-A7FE807980F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{4F97C50E-99ED-41A1-AB08-A7FE807980F4} = {F4940B6F-E231-4E5F-B9C8-3C16C7FCFF6B}
 	EndGlobalSection
 EndGlobal

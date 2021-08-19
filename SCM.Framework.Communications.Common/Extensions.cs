@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 
-namespace Common
+namespace SCM.Framework.Communications.Common
 {
     public static class Extensions
     {

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <PackageId>SCM.Framework.Communications.NATS</PackageId>
+        <Title>SCM.Framework.Communications.NATS</Title>
+        <Authors>Suheyl Z.</Authors>
+        <Description>Provides fast communication that can be used for RPC. </Description>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageVersion>1.0.2</PackageVersion>
+        <Company>NICCAF</Company>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SCM.Framework.Communications.Common\SCM.Framework.Communications.Common.csproj">
+          <PrivateAssets>all</PrivateAssets>
+      </ProjectReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NATS.Client" Version="0.14.0-pre1" />
+      <PackageReference Include="NLog" Version="4.7.10" />
+    </ItemGroup>
+
+</Project>

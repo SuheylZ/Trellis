@@ -1,12 +1,12 @@
 using System.IO;
-using Common;
+using SCM.Framework.Communications.Common;
 using Utf8Json;
 
-namespace SCM.Framework.Serializer
+namespace SCM.Framework.Serialization
 {
     public class Utf8Json
     {
-        public static Common.Serializer Serializer
+        public static Communications.Common.Serializer Serializer
         {
             get
             {

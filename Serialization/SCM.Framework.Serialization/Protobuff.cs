@@ -1,11 +1,11 @@
 using System.IO;
-using Common;
+using SCM.Framework.Communications.Common;
 
-namespace SCM.Framework.Serializer
+namespace SCM.Framework.Serialization
 {
     public class Protobuff
     {
-        public static Common.Serializer Serializer
+        public static Communications.Common.Serializer Serializer
         {
             get
             {

@@ -1,12 +1,12 @@
 using System.IO;
-using Common;
+using SCM.Framework.Communications.Common;
 using MessagePack;
 
-namespace SCM.Framework.Serializer
+namespace SCM.Framework.Serialization
 {
     public class MessagePack
     {
-        public static Common.Serializer Serializer
+        public static Communications.Common.Serializer Serializer
         {
             get
             {

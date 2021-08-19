@@ -3,11 +3,11 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
-using Common;
+using SCM.Framework.Communications.Common;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace SCM.Framework.Serializer
+namespace SCM.Framework.Serialization
 {
     public class NewtonSoft
     {

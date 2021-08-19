@@ -1,9 +1,9 @@
 using System;
-using Common;
+using SCM.Framework.Communications.Common;
 using NATS.Client;
 
 
-namespace Communications.NATS
+namespace SCM.Framework.Communications.NATS
 {
     /// <summary>
     /// 
@@ -49,5 +49,5 @@ namespace Communications.NATS
 
 
 
- namespace Communications.NATS
+ namespace SCM.Framework.Communications.NATS
  { }

@@ -1,4 +1,4 @@
-namespace Communications.NATS
+namespace SCM.Framework.Communications.Common
 {
     public enum CommunicationTypes
     {
