@@ -7,7 +7,7 @@
         <Authors>Suheyl Z.</Authors>
         <Description>Provides fast communication that can be used for RPC. </Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>1.0.2</PackageVersion>
+        <PackageVersion>1.0.3</PackageVersion>
         <Company>NICCAF</Company>
     </PropertyGroup>
 

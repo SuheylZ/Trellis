@@ -44,7 +44,7 @@ namespace SCM.Framework.Communications.NATS
         /// <param name="group">group name</param>
         /// <typeparam name="TMessage">type of the message that will be received on this queue</typeparam>
         /// <returns></returns>
-        Func<CancellationToken, IEnumerable<(Metadata header, byte[] message, Action<object> reply)>> CreateListeningIterator(string subject, string group, out Deserializer deserializer);
+        Func<CancellationToken, IEnumerable<(Metadata header, string subject, byte[] message, Action<object> reply)>> CreateListeningIterator(string subject, string group, out Deserializer deserializer);
 
         /// <summary>
         /// Creates a generic iterator for listening to the incomming messages on a topic.

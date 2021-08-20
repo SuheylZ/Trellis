@@ -19,7 +19,7 @@ namespace Program
 
             var serdes = new SerDes((obj) => NewtonSoft.Serialize(obj.GetType(), obj), (typ, x) => NewtonSoft.Deserialize(typ, x));
             
-            var NATS = new Communication(c =>
+            var NATS = new NATSCommunicationImpl(c =>
                 {
                     c.Servers = servers;
                     c.AllowReconnect = true;

@@ -9,7 +9,7 @@ using Serializer = SCM.Framework.Communications.Common.Serializer;
 
 namespace SCM.Framework.Communications.NATS
 {
-    public class Communication : ICommunication, ICommunicationStatus
+    public class NATSCommunicationImpl : ICommunication, ICommunicationStatus
     {
         readonly Action<Options> _configureOptions;
         readonly Action<Exception> _errorHandler;
@@ -21,9 +21,9 @@ namespace SCM.Framework.Communications.NATS
         readonly Func<Lazy<IConnection>> _establishConnection;
 
 
-        public Communication(Action<Options> configureAction, ISerDes sd) : this(configureAction, sd, string.Empty, ex => { }) { }
+        public NATSCommunicationImpl(Action<Options> configureAction, ISerDes sd) : this(configureAction, sd, string.Empty, ex => { }) { }
 
-        public Communication(Action<Options> configureOptions, ISerDes sd, string sender, Action<Exception> errorHandler)
+        public NATSCommunicationImpl(Action<Options> configureOptions, ISerDes sd, string sender, Action<Exception> errorHandler)
         {
             _configureOptions = configureOptions;
             sd.GetSerializers(out _serialize, out _deserialize);
@@ -251,12 +251,12 @@ namespace SCM.Framework.Communications.NATS
         /// <param name="group">group name</param>
         /// <typeparam name="TMessage">type of the message that will be received on this queue</typeparam>
         /// <returns></returns>
-        public Func<CancellationToken, IEnumerable<(Metadata header, byte[] message, Action<object> reply)>> CreateListeningIterator(string subject, string group, out Deserializer deserializer)
+        public Func<CancellationToken, IEnumerable<(Metadata header, string subject, byte[] message, Action<object> reply)>> CreateListeningIterator(string subject, string group, out Deserializer deserializer)
         {
             deserializer = _deserialize;
             return Fetcher;
 
-            IEnumerable<(Metadata md, byte[] message, Action<object> reply)> Fetcher(CancellationToken token)
+            IEnumerable<(Metadata md, string subject, byte[] message, Action<object> reply)> Fetcher(CancellationToken token)
             {
                 var cnn = _establishConnection().Value;
                 using (cnn)
@@ -269,7 +269,7 @@ namespace SCM.Framework.Communications.NATS
                             {
                                 Metadata md = msg.Header;
                                 var data = msg.Data;
-                                yield return (md, data, ret => msg.Respond(_serialize(ret)));
+                                yield return (md, msg.Subject, data, ret => msg.Respond(_serialize(ret)));
                             }
                         }
                         subscription.Unsubscribe();
