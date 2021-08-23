@@ -46,7 +46,7 @@ namespace SCM.Framework.Communications.NATS
         {
             var id = Guid.NewGuid().ToString();
             var binary = _serialize(data);
-            var md = new Metadata(_sender, type, data);
+            var md = new Metadata(_sender, type, data, subject);
 
             return new Msg
             {
@@ -168,6 +168,10 @@ namespace SCM.Framework.Communications.NATS
                         if (t1 is TRequest data)
                         {
                             Metadata md = args.Message.Header;
+                            if (string.IsNullOrEmpty(md.subject))
+                            {
+                                md = md with {subject = args.Message.Subject};
+                            }
                             Action<object> reply = obj => args.Message.Respond(_serialize(obj));
 
                             handler(md, data, reply);
@@ -251,12 +255,11 @@ namespace SCM.Framework.Communications.NATS
         /// <param name="group">group name</param>
         /// <typeparam name="TMessage">type of the message that will be received on this queue</typeparam>
         /// <returns></returns>
-        public Func<CancellationToken, IEnumerable<(Metadata header, string subject, byte[] message, Action<object> reply)>> CreateListeningIterator(string subject, string group, out Deserializer deserializer)
+        public Func<CancellationToken, IEnumerable<(Metadata header, Func<Type, object> unpacker, Action<object> reply)>> CreateListeningIterator(string subject, string group)
         {
-            deserializer = _deserialize;
             return Fetcher;
 
-            IEnumerable<(Metadata md, string subject, byte[] message, Action<object> reply)> Fetcher(CancellationToken token)
+            IEnumerable<(Metadata md, Func<Type, object> unpacker, Action<object> reply)> Fetcher(CancellationToken token)
             {
                 var cnn = _establishConnection().Value;
                 using (cnn)
@@ -268,8 +271,10 @@ namespace SCM.Framework.Communications.NATS
                             if (TryGetMessage(subscription, out var msg, token))
                             {
                                 Metadata md = msg.Header;
-                                var data = msg.Data;
-                                yield return (md, msg.Subject, data, ret => msg.Respond(_serialize(ret)));
+                                if (string.IsNullOrEmpty(md.subject))
+                                    md = md with {subject = msg.Subject};
+
+                                yield return (md, t => _deserialize(t, msg.Data), ret => msg.Respond(_serialize(ret)));
                             }
                         }
                         subscription.Unsubscribe();
@@ -281,38 +286,41 @@ namespace SCM.Framework.Communications.NATS
 
       
 
-        /// <summary>
-        /// Creates a generic iterator for listening to the incomming messages on a topic.
-        /// Messages are delivered in NATS core format.
-        /// </summary>
-        /// <param name="subject">name of the queue to listen to</param>
-        /// <param name="group">group name</param>
-        /// <typeparam name="TMessage">type of the message that will be received on this queue</typeparam>
-        /// <returns></returns>
-        public Func<CancellationToken, IEnumerable<(Metadata header, Msg payload, Action<object> reply)>> CreateGenericListeningIterator(string subject, string group)
-        {
-            return Fetcher;
-
-            IEnumerable<(Metadata header, Msg payload, Action<object> reply)> Fetcher(CancellationToken token)
-            {
-                var cnn = _establishConnection().Value;
-                using (cnn)
-                {
-                    using (var subscription = cnn.SubscribeSync(subject, group))
-                    {
-                        while (!token.IsCancellationRequested && subscription.IsValid)
-                        {
-                            if (TryGetMessage(subscription, out var msg, token))
-                            {
-                                Metadata md = msg.Header;
-                                yield return (header: md, payload: msg, ret => msg.Respond(_serialize(ret)));
-                            }
-                        }
-                        subscription.Unsubscribe();
-                    }
-                    cnn.Close();
-                }
-            }
-        }
+        // /// <summary>
+        // /// Creates a generic iterator for listening to the incomming messages on a topic.
+        // /// Messages are delivered in NATS core format.
+        // /// </summary>
+        // /// <param name="subject">name of the queue to listen to</param>
+        // /// <param name="group">group name</param>
+        // /// <typeparam name="TMessage">type of the message that will be received on this queue</typeparam>
+        // /// <returns></returns>
+        // public Func<CancellationToken, IEnumerable<(Metadata header, Func<Type, object> unpacker, Action<object> reply)>> CreateGenericListeningIterator(string subject, string group)
+        // {
+        //     return Fetcher;
+        //
+        //     IEnumerable<(Metadata header, Func<Type, object> unpacker, Action<object> reply)> Fetcher(CancellationToken token)
+        //     {
+        //         var cnn = _establishConnection().Value;
+        //         using (cnn)
+        //         {
+        //             using (var subscription = cnn.SubscribeSync(subject, group))
+        //             {
+        //                 while (!token.IsCancellationRequested && subscription.IsValid)
+        //                 {
+        //                     if (TryGetMessage(subscription, out var msg, token))
+        //                     {
+        //                         Metadata md = msg.Header;
+        //                         if (string.IsNullOrEmpty(md.subject))
+        //                             md = md with {subject = msg.Subject};
+        //                         
+        //                         yield return (header: md, unpacker: t => _deserialize(t, msg.Data), ret => msg.Respond(_serialize(ret)));
+        //                     }
+        //                 }
+        //                 subscription.Unsubscribe();
+        //             }
+        //             cnn.Close();
+        //         }
+        //     }
+        // }
     }
 }

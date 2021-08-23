@@ -13,9 +13,9 @@ namespace SCM.Framework.Communications.NATS
     /// <param name="SentBy">service that sent message</param>
     /// <param name="Communication">Communication type (command, query, RPC event etc)</param>
     /// <param name="TypeName">name of the actual type that was serialized with assembly name</param>
-    public record Metadata(Guid Id, DateTime CreatedOn, string SentBy, CommunicationTypes Communication, string TypeName)
+    public record Metadata(Guid Id, DateTime CreatedOn, string SentBy, CommunicationTypes Communication, string TypeName, string subject)
     {
-        public Metadata(string sentBy, CommunicationTypes communication, object data): this(Guid.NewGuid(), DateTime.UtcNow, sentBy, communication, data.GetType().FullName)
+        public Metadata(string sentBy, CommunicationTypes communication, object data, string subject = ""): this(Guid.NewGuid(), DateTime.UtcNow, sentBy, communication, data.GetType().FullName, subject)
         {
         }
 
@@ -30,18 +30,20 @@ namespace SCM.Framework.Communications.NATS
             if(!Enum.TryParse(typeof(CommunicationTypes), headers[HeaderNames.KCommunicationType], out var commType))
                 commType = CommunicationTypes.FireAndForget;
 
-            return new Metadata(id, date, headers[HeaderNames.KSentFrom], (CommunicationTypes)commType, headers[HeaderNames.KTypeName]);
+            return new Metadata(id, date, headers[HeaderNames.KSentFrom], (CommunicationTypes)commType, headers[HeaderNames.KTypeName], headers[HeaderNames.KSubject]);
         }
 
         public static implicit operator MsgHeader(Metadata md)
         {
             var header = new MsgHeader();
+            
             header[HeaderNames.KMessageId] = md.Id.ToString();
             header[HeaderNames.KCreatedOn] = md.CreatedOn.ToIso8601String();
             header[HeaderNames.KSentFrom] = md.SentBy;
             header[HeaderNames.KCommunicationType] = md.Communication.ToString();
             header[HeaderNames.KTypeName] = md.TypeName;
-            
+            header[HeaderNames.KSubject] = string.Empty;
+
             return header;
         }
     }

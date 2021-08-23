@@ -16,8 +16,6 @@ namespace SCM.Framework.Communications.Common
             this.Type = Type;
             this.Message = Message;
         }
-     
-   
         public Letter(string @by, CommunicationTypes type, object message, DateTime createdOn):this(@by, type, message)
         {
             CreatedOn = createdOn;

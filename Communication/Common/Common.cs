@@ -4,13 +4,22 @@ using System;
 
 namespace SCM.Framework.Communications.Common
 {
+    /// <summary>
+    /// Serializer signature
+    /// </summary>
     public delegate byte[] Serializer(object message);
+    /// <summary>
+    /// Deserializer signature
+    /// </summary>
     public delegate object Deserializer(Type type, byte[] data);
 
-    public delegate bool TrySerialize(object message, out byte[] binary);
-    public delegate bool TryDeserialize(byte[] binary, out object obj);
+    // public delegate bool TrySerialize(object message, out byte[] binary);
+    // public delegate bool TryDeserialize(byte[] binary, out object obj);
 
 
+    /// <summary>
+    /// Runs the code in sand box so any exceptions are not propagated outside and cause damage
+    /// </summary>
     public static class Sandbox
     {
         public static void Try(Action act, Action<Exception> handler = null)

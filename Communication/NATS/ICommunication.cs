@@ -44,16 +44,16 @@ namespace SCM.Framework.Communications.NATS
         /// <param name="group">group name</param>
         /// <typeparam name="TMessage">type of the message that will be received on this queue</typeparam>
         /// <returns></returns>
-        Func<CancellationToken, IEnumerable<(Metadata header, string subject, byte[] message, Action<object> reply)>> CreateListeningIterator(string subject, string group, out Deserializer deserializer);
+        Func<CancellationToken, IEnumerable<(Metadata header, Func<Type, object> unpacker, Action<object> reply)>> CreateListeningIterator(string subject, string group);
 
-        /// <summary>
-        /// Creates a generic iterator for listening to the incomming messages on a topic.
-        /// Messages are delivered in NATS core format.
-        /// </summary>
-        /// <param name="subject">name of the queue to listen to</param>
-        /// <param name="group">group name</param>
-        /// <typeparam name="TMessage">type of the message that will be received on this queue</typeparam>
-        /// <returns></returns>
-        Func<CancellationToken, IEnumerable<(Metadata header, Msg payload, Action<object> reply)>> CreateGenericListeningIterator(string subject, string group);
+        // /// <summary>
+        // /// Creates a generic iterator for listening to the incomming messages on a topic.
+        // /// Messages are delivered in NATS core format.
+        // /// </summary>
+        // /// <param name="subject">name of the queue to listen to</param>
+        // /// <param name="group">group name</param>
+        // /// <typeparam name="TMessage">type of the message that will be received on this queue</typeparam>
+        // /// <returns></returns>
+        // Func<CancellationToken, IEnumerable<(Metadata header, Func<Type, object> unpacker, Action<object> reply)>> CreateGenericListeningIterator(string subject, string group);
     }
 }

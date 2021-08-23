@@ -35,13 +35,13 @@ namespace Program
            
             Action<string> listening = (name) =>
             {
-                var listen = NATS.CreateGenericListeningIterator(subject, "mygroup");
+                var listen = NATS.CreateListeningIterator(subject, "mygroup");
             
                 try
                 {
-                    foreach (var (headers, msg, reply) in listen(cts.Token))
+                    foreach (var (headers, unpacker, reply) in listen(cts.Token))
                     {
-                        switch (msg.Subject)
+                        switch (headers.subject)
                         {
                             case "foo.baz":
                                 if (DateTime.Now.Ticks % 2 == 0)

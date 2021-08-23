@@ -2,6 +2,7 @@ namespace SCM.Framework.Communications.Common
 {
     public static class HeaderNames
     {
+        public const string KSubject = "subject";
         public const string KCreatedOn = "createdOn";
         public const string KSentFrom = "sentFrom";
         public const string KCommunicationType = "communicationType";

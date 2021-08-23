@@ -2,6 +2,9 @@ using System;
 
 namespace SCM.Framework.Communications.Common
 {
+    /// <summary>
+    /// Creates an object that is disposable on which the supplied function is called
+    /// </summary>
     public sealed class Disposable : IDisposable
     {
         readonly Action _action;
