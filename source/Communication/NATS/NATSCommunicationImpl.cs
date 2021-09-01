@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NATS.Client;
-using Trellis.Communications;
 using Trellis.Serialization;
-using Deserializer =    Trellis.Serialization.Deserializer;
-using Serializer =      Trellis.Serialization.Serializer;
+using Trellis.Utility;
+using Deserializer = Trellis.Serialization.Deserializer;
+using Serializer = Trellis.Serialization.Serializer;
 
 namespace Trellis.Communications.NATS
 {
     public class NATSCommunicationImpl : ICommunication, ICommunicationStatus
     {
-        readonly Action<Options> _configureOptions;
         readonly Action<Exception> _errorHandler;
 
         readonly Serializer _serialize;
@@ -26,7 +25,6 @@ namespace Trellis.Communications.NATS
 
         public NATSCommunicationImpl(Action<Options> configureOptions, ISerDes sd, string sender, Action<Exception> errorHandler)
         {
-            _configureOptions = configureOptions;
             sd.GetSerializers(out _serialize, out _deserialize);
 
             _sender = sender;
@@ -37,7 +35,7 @@ namespace Trellis.Communications.NATS
                     {
                         var cf = new ConnectionFactory();
                         var options = ConnectionFactory.GetDefaultOptions();
-                        _configureOptions(options);
+                        configureOptions(options);
                         return cf.CreateConnection(options);
                     }
                 );
@@ -52,7 +50,7 @@ namespace Trellis.Communications.NATS
             return new Msg
             {
                 Data = binary,
-                Header = md,
+                Header = md.ToMsgHeader(),
                 Subject = subject,
                 Reply = id
             };
@@ -93,7 +91,7 @@ namespace Trellis.Communications.NATS
         
         public bool CommunicationIsWorking()
         {
-            var result = false;
+            bool result;
 
             var t0 = _establishConnection();
             using (var cnn = t0.Value)
@@ -168,7 +166,7 @@ namespace Trellis.Communications.NATS
 
                         if (t1 is TRequest data)
                         {
-                            Metadata md = args.Message.Header;
+                            Metadata md = args.Message.Header.ToMetadata();
                             if (string.IsNullOrEmpty(md.subject))
                             {
                                 md = md with {subject = args.Message.Subject};
@@ -254,7 +252,6 @@ namespace Trellis.Communications.NATS
         /// </summary>
         /// <param name="subject">name of the queue to listen to</param>
         /// <param name="group">group name</param>
-        /// <typeparam name="TMessage">type of the message that will be received on this queue</typeparam>
         /// <returns></returns>
         public Func<CancellationToken, IEnumerable<(Metadata header, Func<Type, object> unpacker, Action<object> reply)>> CreateListeningIterator(string subject, string group)
         {
@@ -271,7 +268,7 @@ namespace Trellis.Communications.NATS
                         {
                             if (TryGetMessage(subscription, out var msg, token))
                             {
-                                Metadata md = msg.Header;
+                                Metadata md = msg.Header.ToMetadata();
                                 if (string.IsNullOrEmpty(md.subject))
                                     md = md with {subject = msg.Subject};
 

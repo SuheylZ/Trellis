@@ -1,25 +1,17 @@
 using System;
-using Trellis.Communications;
 using NATS.Client;
-
+using Trellis.Utility;
 
 namespace Trellis.Communications.NATS
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="Id">Message identity</param>
-    /// <param name="CreatedOn">creation date of message</param>
-    /// <param name="SentBy">service that sent message</param>
-    /// <param name="Communication">Communication type (command, query, RPC event etc)</param>
-    /// <param name="TypeName">name of the actual type that was serialized with assembly name</param>
-    public record Metadata(Guid Id, DateTime CreatedOn, string SentBy, CommunicationTypes Communication, string TypeName, string subject)
+    public static class Extension
     {
-        public Metadata(string sentBy, CommunicationTypes communication, object data, string subject = ""): this(Guid.NewGuid(), DateTime.UtcNow, sentBy, communication, data.GetType().FullName, subject)
-        {
-        }
-
-        public static implicit operator Metadata(MsgHeader headers)
+        /// <summary>
+        /// Converts the NATS headers to Metadata
+        /// </summary>
+        /// <param name="headers">headers from NATS Msg</param>
+        /// <returns>Metadata</returns>
+        public static Metadata ToMetadata(this MsgHeader headers)
         {
             if (!Guid.TryParse(headers[HeaderNames.KMessageId], out var id))
                 id = Guid.Empty;
@@ -33,7 +25,12 @@ namespace Trellis.Communications.NATS
             return new Metadata(id, date, headers[HeaderNames.KSentFrom], (CommunicationTypes)commType, headers[HeaderNames.KTypeName], headers[HeaderNames.KSubject]);
         }
 
-        public static implicit operator MsgHeader(Metadata md)
+        /// <summary>
+        /// Converts Metadata to NATS headers
+        /// </summary>
+        /// <param name="md">metadata to be used</param>
+        /// <returns>MsgHeader</returns>
+        public static MsgHeader ToMsgHeader(this Metadata md)
         {
             var header = new MsgHeader();
             
@@ -48,8 +45,3 @@ namespace Trellis.Communications.NATS
         }
     }
 }
-
-
-
- namespace Trellis.Communications.NATS
- { }
