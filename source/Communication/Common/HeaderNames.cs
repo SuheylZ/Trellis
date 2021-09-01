@@ -1,4 +1,4 @@
-namespace Trellis.Communications.Common
+namespace Trellis.Communications
 {
     public static class HeaderNames
     {

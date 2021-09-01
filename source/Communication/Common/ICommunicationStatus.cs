@@ -1,4 +1,4 @@
-namespace Trellis.Communications.Common
+namespace Trellis.Communications
 {
     /// <summary>
     /// Checks the status of communication

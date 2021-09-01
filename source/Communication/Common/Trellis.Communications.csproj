@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageId>Trellis.Communications.Common</PackageId>
+        <PackageId>Trellis.Communications</PackageId>
         <Authors>Suheyl Z.</Authors>
         <Description>All the common functionality that is often required and used.</Description>
         <PackageVersion>1.0.2</PackageVersion>

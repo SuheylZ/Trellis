@@ -18,7 +18,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Serialization\Trellis.Serialization.csproj" />
-      <ProjectReference Include="..\Common\Trellis.Communications.Common.csproj" />
+      <ProjectReference Include="..\Common\Trellis.Communications.csproj" />
     </ItemGroup>
 
 </Project>

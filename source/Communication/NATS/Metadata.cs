@@ -1,5 +1,5 @@
 using System;
-using Trellis.Communications.Common;
+using Trellis.Communications;
 using NATS.Client;
 
 

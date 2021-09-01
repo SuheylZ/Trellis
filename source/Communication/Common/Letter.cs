@@ -1,6 +1,6 @@
 using System;
 
-namespace Trellis.Communications.Common
+namespace Trellis.Communications
 {
     public sealed class Letter
     {

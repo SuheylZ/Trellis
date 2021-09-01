@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trellis.Communications.Common", "Communication\Common\Trellis.Communications.Common.csproj", "{BE178445-6E57-41ED-96A6-6D99B74A1161}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trellis.Communications", "Communication\Common\Trellis.Communications.csproj", "{BE178445-6E57-41ED-96A6-6D99B74A1161}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trellis.Communications.NATS", "Communication\NATS\Trellis.Communications.NATS.csproj", "{A5879BE1-2ECF-4B53-A1CA-D7DA024D6772}"
 EndProject

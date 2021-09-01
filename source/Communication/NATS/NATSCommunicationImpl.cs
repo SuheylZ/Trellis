@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NATS.Client;
-using Trellis.Communications.Common;
+using Trellis.Communications;
 using Trellis.Serialization;
 using Deserializer =    Trellis.Serialization.Deserializer;
 using Serializer =      Trellis.Serialization.Serializer;

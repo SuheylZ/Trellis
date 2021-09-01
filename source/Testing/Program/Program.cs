@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Trellis.Communications.NATS;
 using NATS.Client;
-using Trellis.Communications.Common;
+using Trellis.Communications;
 using Trellis.Serialization;
 
 
