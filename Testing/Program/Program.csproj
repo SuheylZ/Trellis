@@ -15,9 +15,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Communication\NATS\SCM.Framework.Communications.NATS.csproj" />
+      <ProjectReference Include="..\..\Communication\Common\SCM.Framework.Communications.Common.csproj" />
+      <ProjectReference Include="..\..\Communication\NATS\SCM.Framework.Communications.NATS.csproj" />
+      <ProjectReference Include="..\..\Serialization\SCM.Framework.Serialization\SCM.Framework.Serialization.csproj" />
       <ProjectReference Include="..\Messages\Messages.csproj" />
-      <ProjectReference Include="..\Serialization\SCM.Framework.Serialization\SCM.Framework.Serialization.csproj" />
     </ItemGroup>
 
 </Project>
