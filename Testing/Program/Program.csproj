@@ -15,9 +15,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Communication\Common\SCM.Framework.Communications.Common.csproj" />
-      <ProjectReference Include="..\..\Communication\NATS\SCM.Framework.Communications.NATS.csproj" />
-      <ProjectReference Include="..\..\Serialization\SCM.Framework.Serialization\SCM.Framework.Serialization.csproj" />
+      <ProjectReference Include="..\..\Communication\Common\Trellis.Communications.Common.csproj" />
+      <ProjectReference Include="..\..\Communication\NATS\Trellis.Communications.NATS.csproj" />
+      <ProjectReference Include="..\..\Serialization\Trellis.Serialization\Trellis.Serialization.csproj" />
       <ProjectReference Include="..\Messages\Messages.csproj" />
     </ItemGroup>
 

@@ -6,13 +6,13 @@
         <Title>SCM.Framework.Serialization</Title>
         <Authors>Suheyl Z.</Authors>
         <Description>Provides serialization options that can be used for communication or various other purposes.</Description>
-        <PackageId>SCM.Framework.Serialization</PackageId>
+        <PackageId>Trellis.Serialization</PackageId>
         <PackageVersion>1.0.1</PackageVersion>
         <Company>NICCAF</Company>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Communication\Common\SCM.Framework.Communications.Common.csproj" />
+      <ProjectReference Include="..\..\Communication\Common\Trellis.Communications.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>

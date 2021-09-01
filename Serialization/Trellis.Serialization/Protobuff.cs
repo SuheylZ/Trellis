@@ -1,12 +1,11 @@
 using System.IO;
-using SCM.Framework.Communications.Common;
-using MessagePack;
+using Trellis.Communications.Common;
 
-namespace SCM.Framework.Serialization
+namespace Trellis.Serialization
 {
-    public class MessagePack
+    public class Protobuff
     {
-        public static Communications.Common.Serializer Serializer
+        public static Trellis.Communications.Common.Serializer Serializer
         {
             get
             {
@@ -14,9 +13,9 @@ namespace SCM.Framework.Serialization
                 {
                     using (var ms = new MemoryStream())
                     {
-                        MessagePackSerializer.Serialize(data.GetType(), ms, data);
+                        ProtoBuf.Serializer.Serialize(ms, data);
                         ms.Close();
-                        return ms.GetBuffer();
+                        return ms.ToArray();
                     }
                 };
             }
@@ -30,14 +29,14 @@ namespace SCM.Framework.Serialization
                 {
                     using (var ms = new MemoryStream(data))
                     {
-                        var ret1 = MessagePackSerializer.Deserialize(type, ms);
+                        var obj = ProtoBuf.Serializer.Deserialize(type, ms);
                         ms.Close();
-                        return ret1;
+                        
+                        return obj;
                     }
                 };
             }
         }
 
-        
     }
 }

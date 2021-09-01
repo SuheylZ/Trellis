@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NATS.Client;
-using SCM.Framework.Communications.Common;
-using Deserializer = SCM.Framework.Communications.Common.Deserializer;
-using Serializer = SCM.Framework.Communications.Common.Serializer;
+using Trellis.Communications.Common;
+using Deserializer = Trellis.Communications.Common.Deserializer;
+using Serializer = Trellis.Communications.Common.Serializer;
 
-namespace SCM.Framework.Communications.NATS
+namespace Trellis.Communications.NATS
 {
     public class NATSCommunicationImpl : ICommunication, ICommunicationStatus
     {

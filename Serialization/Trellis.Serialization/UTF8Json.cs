@@ -1,12 +1,12 @@
 using System.IO;
-using SCM.Framework.Communications.Common;
+using Trellis.Communications.Common;
 using Utf8Json;
 
-namespace SCM.Framework.Serialization
+namespace Trellis.Serialization
 {
     public class Utf8Json
     {
-        public static Communications.Common.Serializer Serializer
+        public static Trellis.Communications.Common.Serializer Serializer
         {
             get
             {

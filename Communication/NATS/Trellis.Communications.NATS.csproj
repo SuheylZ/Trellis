@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <PackageId>SCM.Framework.Communications.NATS</PackageId>
+        <PackageId>Trellis.Communications.NATS</PackageId>
         <Title>SCM.Framework.Communications.NATS</Title>
         <Authors>Suheyl Z.</Authors>
         <Description>Provides fast communication that can be used for RPC. </Description>
@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common\SCM.Framework.Communications.Common.csproj" />
+      <ProjectReference Include="..\Common\Trellis.Communications.Common.csproj" />
     </ItemGroup>
 
 </Project>

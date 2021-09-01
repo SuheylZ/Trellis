@@ -1,6 +1,6 @@
 using System;
 
-namespace SCM.Framework.Communications.Common
+namespace Trellis.Communications.Common
 {
     /// <summary>
     /// Creates an object that is disposable on which the supplied function is called

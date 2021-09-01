@@ -1,4 +1,4 @@
-namespace SCM.Framework.Communications.Common
+namespace Trellis.Communications.Common
 {
     public interface ISerDes
     {

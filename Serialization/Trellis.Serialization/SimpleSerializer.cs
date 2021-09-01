@@ -1,12 +1,12 @@
 using System;
 using System.Text;
-using SCM.Framework.Communications.Common;
+using Trellis.Communications.Common;
 
-namespace SCM.Framework.Serialization
+namespace Trellis.Serialization
 {
     public class SimpleSerializer
     {
-        public static Communications.Common.Serializer Serializer
+        public static Trellis.Communications.Common.Serializer Serializer
         {
             get
             {

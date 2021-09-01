@@ -3,11 +3,11 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
-using SCM.Framework.Communications.Common;
+using Trellis.Communications.Common;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace SCM.Framework.Serialization
+namespace Trellis.Serialization
 {
     public class NewtonSoft
     {

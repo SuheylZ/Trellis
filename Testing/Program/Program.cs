@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using SCM.Framework.Communications.NATS;
+using Trellis.Communications.NATS;
 using NATS.Client;
-using SCM.Framework.Communications.Common;
-using SCM.Framework.Serialization;
+using Trellis.Communications.Common;
+using Trellis.Serialization;
 
 
 namespace Program
@@ -106,10 +106,10 @@ namespace Program
             // var o1 = new YourMessage(1, "ali");
             // var o2 = new MyMessage {Id = 1, Name = "ali"};
             //
-            // var b1 = Protobuff.SCM.Framework.Serialization(o2);
+            // var b1 = Protobuff.Trellis.Serialization(o2);
             // var ox = Protobuff.Deserializer(o2.GetType(), b1);
             //
-            // var b2 = Protobuff.SCM.Framework.Serialization(o1);
+            // var b2 = Protobuff.Trellis.Serialization(o1);
             // var oy = Protobuff.Deserializer(o2.GetType(), b2);
         }
     }

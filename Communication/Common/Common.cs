@@ -2,7 +2,7 @@
 
 using System;
 
-namespace SCM.Framework.Communications.Common
+namespace Trellis.Communications.Common
 {
     /// <summary>
     /// Serializer signature

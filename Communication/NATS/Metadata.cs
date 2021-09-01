@@ -1,9 +1,9 @@
 using System;
-using SCM.Framework.Communications.Common;
+using Trellis.Communications.Common;
 using NATS.Client;
 
 
-namespace SCM.Framework.Communications.NATS
+namespace Trellis.Communications.NATS
 {
     /// <summary>
     /// 
@@ -51,5 +51,5 @@ namespace SCM.Framework.Communications.NATS
 
 
 
- namespace SCM.Framework.Communications.NATS
+ namespace Trellis.Communications.NATS
  { }
