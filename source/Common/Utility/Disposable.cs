@@ -1,6 +1,6 @@
 using System;
 
-namespace Trellis.Communications
+namespace Trellis.Utility
 {
     /// <summary>
     /// Creates an object that is disposable on which the supplied function is called

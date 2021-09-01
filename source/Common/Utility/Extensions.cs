@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 
-namespace Trellis.Communications
+namespace Trellis.Utility
 {
     public static class Extensions
     {
