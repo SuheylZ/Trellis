@@ -41,7 +41,7 @@ namespace Program
                 {
                     foreach (var (headers, unpacker, reply) in listen(cts.Token))
                     {
-                        switch (headers.subject)
+                        switch (headers.SentFrom)
                         {
                             case "foo.baz":
                                 if (DateTime.Now.Ticks % 2 == 0)

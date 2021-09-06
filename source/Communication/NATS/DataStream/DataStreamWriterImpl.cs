@@ -85,13 +85,16 @@ namespace Trellis.Communications.NATS.DataStream
             var msg = new Msg
             {
                 Data = bytes,
-                Subject = $"{_stream}.{topic}",
-                Header = CreateHeader()
+                Subject = $"{topic}",
+                Header = CreateHeader(DateTime.UtcNow, topic, sender, 0)
             };
 
             return msg;
-            
-            MsgHeader CreateHeader(DateTime createdOn, string subject, string sender, ulong id, )
+
+            MsgHeader CreateHeader(DateTime createdOn, string subject, string sender, ulong id)
+            {
+                return new MsgHeader();
+            }
         }
 
         public Func<T, Task> Compose<T>(string topic)

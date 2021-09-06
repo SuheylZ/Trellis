@@ -74,7 +74,8 @@ namespace Trellis.Communications.NATS.DataStream
                     .Build();
 
                 var js = cnn.CreateJetStreamContext(options);
-                js.
+
+                throw new NotImplementedException();
 
 
 
@@ -91,7 +92,8 @@ namespace Trellis.Communications.NATS.DataStream
         {
             var mgr = cnn.CreateJetStreamManagementContext();
             var info = mgr.GetStreamInfo(stream);
-            
+
+            throw new NotImplementedException();
         }
     }
 }

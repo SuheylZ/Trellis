@@ -5,7 +5,7 @@ namespace Trellis.Communications.DataStreams
 {
     public interface IDataStreamWriter 
     {
-        Func<string, object, Task> Compose();
+        Func<string, object, Task<bool>> Compose();
         Func<T, Task> Compose<T>(string topic);
         void Dispose();
     }

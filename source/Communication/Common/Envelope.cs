@@ -1,36 +1,42 @@
 using System;
+using Trellis.Serialization;
 
 namespace Trellis.Communications
 {
-    public record Envelope
+    public record Envelope(Metadata Headers, byte[] Data);
+    
+
+
+    public class EnvelopeCreator
     {
-        public Envelope(ulong Id, string By, DateTime CreatedOn, CommunicationTypes Type, object Data, string Tag)
+        readonly Serializer _serialize;
+        
+        Envelope NewRequest(string sender, string subject, object message)
         {
-            this.Id = Id;
-            this.By = By;
-            this.CreatedOn = CreatedOn;
-            this.Type = Type;
-            this.Data = Data;
-            this.Tag = Tag;
+            var id = Guid.NewGuid();
+            var sentOn = DateTime.UtcNow;
+            var type = message.GetType().FullName;
+            var mtype = MessageTypes.Request;
+            
+            // serialize data
+            var binary = _serialize(message);
+
+            var headers = new Metadata(id, sentOn, sender, mtype, type, subject, id.ToString());
+            return new Envelope(headers, binary);
         }
         
-        public ulong Id { get; init; }
-        public string By { get; init; }
-        public DateTime CreatedOn { get; init; }
-        public CommunicationTypes Type { get; init; }
-        public object Data { get; init; }
-        public string Tag { get; init; }
-        
-        
-        public void Deconstruct(out ulong Id, out string By, out DateTime CreatedOn, out CommunicationTypes Type, out object Data, out string Tag)
+        Envelope NewReply(Metadata headers, string sender, object message)
         {
-            Id = this.Id;
-            By = this.By;
-            CreatedOn = this.CreatedOn;
-            Type = this.Type;
-            Data = this.Data;
-            Tag = this.Tag;
+            var id = Guid.NewGuid();
+            var sentOn = DateTime.UtcNow;
+            var type = message.GetType().FullName;
+            var mtype = MessageTypes.Request;
+            
+            // serialize data
+            var binary = _serialize(message);
+
+            var headers2 = new Metadata(id, sentOn, sender, MessageTypes.Response, type, headers.ReplyTo, string.Empty);
+            return new Envelope(headers2, binary);
         }
     }
-
 }

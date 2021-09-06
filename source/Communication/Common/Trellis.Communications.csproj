@@ -10,4 +10,13 @@
         <Company>NICCAF</Company>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Common\Utility\Trellis.Utility.csproj" />
+      <ProjectReference Include="..\..\Serialization\Trellis.Serialization.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Reactive.Core" Version="5.0.0" />
+    </ItemGroup>
+
 </Project>

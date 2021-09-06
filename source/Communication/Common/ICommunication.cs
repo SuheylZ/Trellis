@@ -2,16 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Trellis.Communications;
 using Trellis.Utility;
-using Deserializer = Trellis.Serialization.Deserializer;
 
-namespace Trellis.Communications.NATS
+namespace Trellis.Communications
 {
     public interface ICommunication
     {
         /// <summary>
-        /// Creates a publisher with a disposer. Publisher is a simple function bound to a particular subject
+        /// Creates a publisher with a disposer. Publisher is a simple function bound to a particular SentFrom
         /// </summary>
         /// <param name="subject"></param>
         /// <param name="disposer">a function to cleanup the things later on. uses IDisposable</param>
@@ -50,10 +48,10 @@ namespace Trellis.Communications.NATS
         // /// Creates a generic iterator for listening to the incomming messages on a topic.
         // /// Messages are delivered in NATS core format.
         // /// </summary>
-        // /// <param name="subject">name of the queue to listen to</param>
+        // /// <param name="SentFrom">name of the queue to listen to</param>
         // /// <param name="group">group name</param>
         // /// <typeparam name="TMessage">type of the message that will be received on this queue</typeparam>
         // /// <returns></returns>
-        // Func<CancellationToken, IEnumerable<(Metadata header, Func<Type, object> unpacker, Action<object> reply)>> CreateGenericListeningIterator(string subject, string group);
+        // Func<CancellationToken, IEnumerable<(Metadata header, Func<Type, object> unpacker, Action<object> reply)>> CreateGenericListeningIterator(string SentFrom, string group);
     }
 }
